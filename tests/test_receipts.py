@@ -1,26 +1,24 @@
-import io
-
 import pytest
+from fastapi.testclient import TestClient
 
-from app import create_app
+from app import app
 
 
 @pytest.fixture
 def client():
-    return create_app().test_client()
+    return TestClient(app)
 
 
 def test_post_image_returns_line_items(client):
-    data = {"image": (io.BytesIO(b"fake image bytes"), "receipt.jpg")}
-    resp = client.post("/receipts", data=data, content_type="multipart/form-data")
+    files = {"image": ("receipt.jpg", b"fake image bytes", "image/jpeg")}
+    resp = client.post("/receipts", files=files)
     assert resp.status_code == 200
-    body = resp.get_json()
+    body = resp.json()
     assert body["line_items"]
     for item in body["line_items"]:
         assert {"name", "quantity", "price"} <= item.keys()
 
 
-def test_missing_image_is_400(client):
+def test_missing_image_is_422(client):
     resp = client.post("/receipts")
-    assert resp.status_code == 400
-    assert "error" in resp.get_json()
+    assert resp.status_code == 422

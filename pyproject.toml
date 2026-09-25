@@ -1,13 +1,16 @@
 [project]
 name = "receipt-scanner"
 version = "0.1.0"
-requires-python = ">=3.9"
+requires-python = ">=3.14"
 dependencies = [
-    "flask>=3.1.3",
+    "fastapi>=0.128.8",
+    "python-multipart>=0.0.20",
+    "uvicorn[standard]>=0.39.0",
 ]
 
 [dependency-groups]
 dev = [
+    "httpx2>=2.13.1",
     "pytest>=8.4.2",
 ]
 
